@@ -42,10 +42,13 @@ def guardar_matriz(matriz, nombre_archivo):
         for fila in matriz:
             f.write(' '.join(map(str, fila)) + '\n')
 
-def generar_y_guardar(n, t, d, m, carpeta="../data/matrix_input"):
+def generar_y_guardar(n, t, d, m, carpeta="../matrix_multiplication/data/matrix_input"):
     """
     Genera dos matrices y las guarda en archivos con nombres formateados.
     """
+
+    if not os.path.exists(carpeta):
+        os.makedirs(carpeta, exist_ok=True)
 
     M1 = generar_matriz(n, t, d)
     M2 = generar_matriz(n, t, d)
