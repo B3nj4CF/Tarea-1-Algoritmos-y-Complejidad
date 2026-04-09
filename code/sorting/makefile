@@ -11,11 +11,11 @@ SRCS = sorting.cpp \
        algorithms/sort.cpp
 
 # Parámetros del experimento
-SIZES = 10 1000 100000 10000000
+SIZES = 10000000 100000 1000 10 
 TYPES = aleatorio ascendente descendente
 DOMAINS = D1 D7
 SAMPLES = a b c
-ALGORITHMS = mergesort quicksort sort_stl
+ALGORITHMS = mergesort quicksort sort
 
 # Regla principal
 all: $(TARGET)
@@ -26,7 +26,6 @@ $(TARGET): $(SRCS)
 # Limpieza
 clean:
 	rm -f $(TARGET)
-	rm -rf measurements/sorting/*
 
 # Ejecutar el generador de arreglos
 setup:
@@ -38,7 +37,6 @@ test: all
 	./$(TARGET) 1000 sort_stl data/array_input/1000_aleatorio_D1_a.txt
 
 run_all: all
-	@mkdir -p measurements/sorting
 	@for n in $(SIZES); do \
 		for t in $(TYPES); do \
 			for d in $(DOMAINS); do \

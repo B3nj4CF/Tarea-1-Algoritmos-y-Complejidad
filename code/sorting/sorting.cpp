@@ -1,90 +1,107 @@
+/**
+ * TAREA 1 - INF-221 ALGORITMOS Y COMPLEJIDAD
+ * Estudiante: Benjamin Campos
+ * Universidad Tecnica Federico Santa Maria
+*/
+
 #include <iostream>
 #include <vector>
 #include <fstream>
 #include <chrono>
 #include <string>
 #include <algorithm>
-#include <sys/resource.h> // Para medir memoria en Arch Linux
+#include <sys/resource.h> 
 
-// Prototipos
-void mergeSort(std::vector<int>& arr, int left, int right);
-void quickSort(std::vector<int>& arr, int low, int high);
+// Declaraciones selectivas para que el codifo se vea mas lumpio
+using std::vector;
+using std::string;
+using std::ifstream;
+using std::ofstream;
+using std::cerr;
+using std::cout;
+using std::endl;
+using std::to_string;
+
+// Prototipos de las funciones
+void mergeSort(vector<int>& arr, int left, int right);
+void quickSort(vector<int>& arr, int low, int high);
+
 
 /**
- * Lee el arreglo. No necesita el tamaño N al inicio porque usamos push_back,
- * lo cual es más flexible para los archivos que genera tu script.
+ * Lee el arreglo desde el archivo.
  */
-std::vector<int> leerArray(std::string filename) {
-    std::ifstream file(filename);
+vector<int> leerArray(string filename) {
+    ifstream file(filename);
     int valor;
-    std::vector<int> array;
+    vector<int> array;
+    
     if (!file.is_open()) {
-        std::cerr << "Error: No se pudo abrir el archivo " << filename << std::endl;
+        cerr << "Error: No se pudo abrir el archivo " << filename << endl;
         return array;
     }
+    
     while (file >> valor) {
         array.push_back(valor);
     }
+    
+    file.close();
     return array;
 }
 
 /**
- * Guarda el tiempo y la memoria (VmPeak). 
- * Usamos el tamaño N para organizar el archivo y que sea fácil de graficar.
+ * Guarda el tiempo y el pico de memoria RAM física (RSS) en KB.
  */
-void guardarMedicion(std::string algoritmo, int n, double duracion) {
-    // Esto crea un archivo por algoritmo y tamaño, ej: measurements/sorting/quicksort_1000.txt
-    std::string path = "data/measurements/" + algoritmo + "_" + std::to_string(n) + "_metricas.txt";
-    std::ofstream outFile(path, std::ios::app);
+void guardarMedicion(string algoritmo, int n, double duracion) {
+    string path = "data/measurements/" + algoritmo + "_" + to_string(n) + "_metricas.txt";
+    ofstream outFile(path, std::ios::app);
     
-    // Medimos el pico de memoria consumido por el proceso (VmPeak)
+    // Medición de memoria getrusage
+    // https://man7.org/linux/man-pages/man2/getrusage.2.html peragr en el reporte
     struct rusage usage;
     getrusage(RUSAGE_SELF, &usage);
-    long memory = usage.ru_maxrss;
+    long memoriaUsada = usage.ru_maxrss;
 
     if (outFile.is_open()) {
-        outFile << duracion << " " << memory << "\n";
+        outFile << duracion << " " << memoriaUsada << "\n";
         outFile.close();
     }
 }
 
 int main(int argc, char* argv[]) {
-    // Cambiamos a 3 argumentos obligatorios: algoritmo, tamaño y ruta
     if (argc < 4) {
-        std::cerr << "Uso: ./sorting_test <n> <algoritmo> <archivo_entrada>\n";
+        cerr << "Uso: ./sorting_test <dimension> <algoritmo> <archivo_entrada>" << endl;
         return 1;
     }
 
-    int n_size = std::stoi(argv[1]);
-    std::string algoritmo = argv[2];
-    std::string ruta_archivo = argv[3];
+    int tamanoDimension = std::stoi(argv[1]);
+    string algoritmo = argv[2];
+    string ruta_archivo = argv[3];
     
     // 1. Cargar datos
-    std::vector<int> data = leerArray(ruta_archivo);
-    if (data.empty()) return 1;
+    vector<int> data = leerArray(ruta_archivo);
+    if (data.empty() && tamanoDimension > 0) return 1;
 
     // 2. Medir tiempo
     auto start = std::chrono::high_resolution_clock::now();
 
     if (algoritmo == "mergesort") {
-        mergeSort(data, 0, data.size() - 1);
+        mergeSort(data, 0, (int)data.size() - 1);
     } else if (algoritmo == "quicksort") {
-        quickSort(data, 0, data.size() - 1);
-    } else if (algoritmo == "sort_stl") {
+        quickSort(data, 0, (int)data.size() - 1);
+    } else if (algoritmo == "sort") {
         std::sort(data.begin(), data.end());
+    } else {
+        cerr << "Algoritmo no reconocido: " << algoritmo << endl;
+        return 1;
     }
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> diff = end - start;
 
-    // 3. Guardar métricas (Tiempo y Memoria)
-    guardarMedicion(algoritmo, n_size, diff.count());
+    // 3. Guardar métricas
+    guardarMedicion(algoritmo, tamanoDimension, diff.count());
 
-    // 4. Opcional: Guardar resultado ordenado (solo para verificar)
-    // std::ofstream outResult(ruta_archivo + "_out.txt");
-    // for (int x : data) outResult << x << " ";
-
-    std::cout << "Finalizado: " << algoritmo << " para N=" << n_size << " en " << diff.count() << "s" << std::endl;
+    cout << "Finalizado: " << algoritmo << " para N=" << tamanoDimension << " en " << diff.count() << "s" << endl;
     
     return 0;
 }

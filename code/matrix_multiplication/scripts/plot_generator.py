@@ -43,7 +43,7 @@ def cargar_datos(directorio, algoritmo):
 def generar_graficos():
     # Rutas actualizadas a tu estructura de carpetas
     dir_mediciones = "data/measurements"
-    dir_salida = "plots"
+    dir_salida = "data/plots"
     
     if not os.path.exists(dir_salida):
         os.makedirs(dir_salida)
@@ -51,7 +51,7 @@ def generar_graficos():
     algoritmos = ["naive", "strassen"]
     colores = {'naive': 'blue', 'strassen': 'red'}
     
-    # --- GRÁFICO 1: TIEMPOS ---
+    # --- GRAFICO TIEMPOS ---
     plt.figure(figsize=(10, 6))
     for algo in algoritmos:
         n, t, m = cargar_datos(dir_mediciones, algo)
@@ -62,12 +62,12 @@ def generar_graficos():
     plt.xlabel("Dimensión de la Matriz (n)")
     plt.ylabel("Tiempo (segundos)")
     plt.xscale('log', base=2) 
-    plt.yscale('log') # Escala logarítmica esencial para ver 0.00002 y 250 juntos
+    plt.yscale('log')
     plt.grid(True, which="both", ls="-", alpha=0.5)
     plt.legend()
     plt.savefig(os.path.join(dir_salida, "tiempo_matrices.png"))
 
-    # --- GRÁFICO 2: MEMORIA ---
+    # --- GRAFICO MEMORIA ---
     plt.figure(figsize=(10, 6))
     for algo in algoritmos:
         n, t, m = cargar_datos(dir_mediciones, algo)

@@ -9,8 +9,8 @@
 #include <fstream>
 #include <chrono>
 #include <string>
+#include <sys/resource.h> // <--- NUEVO: Para rusage
 
-// Declaraciones selectivas para que el codigo se vea mas limpio
 using std::vector;
 using std::string;
 using std::ifstream;
@@ -23,23 +23,17 @@ using std::to_string;
 typedef vector<vector<int>> Matrix;
 
 // Prototipos
-// el prototipo es slo la representacion de la funcion pero no se incluye como tal
 Matrix multiplyNaive(const Matrix& M1, const Matrix& M2, int n);
 Matrix strassen(const Matrix& A, const Matrix& B, int n);
 
 /**
- * Lee la memoria máxima (VmPeak) que ha usado el proceso actual de la ejecucion en KB.
- * El VmPeak es el pico de memoria que se alcanza en el proeso
- * https://docs.kernel.org/filesystems/proc.html traspasar al latex
+    Obtiene el pico de memoria RAM física (RSS) usada por el proceso.
  */
 long obtenerMemoriaPeak() {
-    ifstream statusFile("/proc/self/status");
-    string line;
-    while (getline(statusFile, line)) {
-        if (line.find("VmPeak:") != string::npos) {
-            // Extrae el número de la línea "VmPeak"
-            return std::stol(line.substr(line.find_first_of("0123456789")));
-        }
+    struct rusage usage;
+    if (getrusage(RUSAGE_SELF, &usage) == 0) {
+        // En Arch Linux, ru_maxrss devuelve Kilobytes (KB)
+        return usage.ru_maxrss;
     }
     return 0; 
 }
@@ -59,15 +53,10 @@ Matrix leerMatriz(string filename, int n) {
     return mat;
 }
 
-/**
- * Guarda tiempo y memoria.
- * code/matrix_multiplication/data/measurements/
- */
 void guardarMetricas(string algoritmo, int n, double time, long memory) {
     string path = "data/measurements/" + algoritmo + "_" + to_string(n) + "_metricas.txt";
     ofstream outFile(path, std::ios::app);
     if (outFile.is_open()) {
-        // Se gaurda Tiempo(s) Memoria(KB)
         outFile << time << " " << memory << "\n";
         outFile.close();
     }
@@ -79,7 +68,6 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // n es la dimencion de las matrices. 16(2^4), 32(2^5), 64(2^6), 128(2^7), 256(2^8), 512(2^9), 1024(2^10)
     int dimensionMatriz = std::stoi(argv[1]);
     string algoritmo = argv[2];
     string tipo = argv[3];
@@ -92,7 +80,7 @@ int main(int argc, char* argv[]) {
     Matrix Matriz2 = leerMatriz(f2, dimensionMatriz);
     Matrix result;
 
-    // --- MEDICION DE TIEMPO CON CHRONO ---
+    // --- MEDICION DE TIEMPO ---
     auto start = std::chrono::high_resolution_clock::now();
 
     if (algoritmo == "naive") {
@@ -107,25 +95,19 @@ int main(int argc, char* argv[]) {
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> tiempoTotal = end - start;
 
-    // --- MEDICIÓN DE MEMORIA CON VmPeak ---
+    // --- MEDICIÓN DE MEMORIA CON RUSAGE (RSS) ---
+    // Esto captura el pico máximo de RAM física durante la ejecución
     long memoriaUsada = obtenerMemoriaPeak();
 
-    // Guardar en data/measurements/
     guardarMetricas(algoritmo, dimensionMatriz, tiempoTotal.count(), memoriaUsada);
 
     // --- GUARDAR MATRIZ RESULTANTE ---
-    // el resultado se guarda en data/matrix_output/ con el formato n_algoritmo_out.txt
     string outPath = "data/matrix_output/" + to_string(dimensionMatriz) + "_" + tipo + "_" + dominio + "_" + muestra + "_out.txt";
     ofstream outResult(outPath);
-    // Recorremos cada fila de la matriz
     for (int i = 0; i < dimensionMatriz; i++) {
         for (int j = 0; j < dimensionMatriz; j++) {
             outResult << result[i][j];
-            if (j == dimensionMatriz - 1) {
-                outResult << ""; 
-            } else {
-                outResult << " ";
-            }
+            if (j < dimensionMatriz - 1) outResult << " ";
         }
         outResult << "\n";
     }

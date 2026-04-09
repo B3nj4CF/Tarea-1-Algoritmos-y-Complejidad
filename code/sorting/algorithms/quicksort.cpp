@@ -1,44 +1,32 @@
-#include <iostream>
 #include <vector>
 #include <algorithm>
 
-/**
- * Función de Partición:
- * El objetivo es elegir un "pivote" y reordenar el arreglo de modo que:
- * 1. Los elementos menores al pivote queden a la izquierda.
- * 2. Los elementos mayores al pivote queden a la derecha.
- */
-int partition(std::vector<int>& arr, int low, int high) {
-    // Elegimos el último elemento como pivote
-    int pivot = arr[high]; 
-    
-    // Índice del elemento más pequeño. Indica la posición correcta
-    // hasta ahora del pivote final.
-    int i = (low - 1); 
+using std::vector;
+using std::swap;
 
-    for (int j = low; j <= high - 1; j++) {
-        // Si el elemento actual es menor o igual al pivote
-        if (arr[j] <= pivot) {
-            i++; // Incrementamos el índice del elemento más pequeño
-            std::swap(arr[i], arr[j]); // Intercambiamos
-        }
+/**
+ * Partición de Lomuto
+ * pasar al ingotme https://www.geeksforgeeks.org/dsa/hoares-vs-lomuto-partition-scheme-quicksort/
+ */
+int partition(vector<int>& arr, int low, int high) {
+    int pivot = arr[low + (high - low) / 2]; // Pivote al centro
+    int i = low - 1;
+    int j = high + 1;
+
+    while (true) {
+        do { i++; } while (arr[i] < pivot);
+        do { j--; } while (arr[j] > pivot);
+        
+        if (i >= j) return j;
+        
+        swap(arr[i], arr[j]);
     }
-    // Colocamos el pivote en su posición correcta
-    std::swap(arr[i + 1], arr[high]);
-    return (i + 1);
 }
 
-/**
- * Función principal de Quick Sort:
- * Utiliza la técnica de "Dividir y Conquistar" de forma recursiva.
- */
-void quickSort(std::vector<int>& arr, int low, int high) {
+void quickSort(vector<int>& arr, int low, int high) {
     if (low < high) {
-        // pi es el índice de partición, arr[pi] ya está en su lugar
         int pi = partition(arr, low, high);
-
-        // Ordenamos los elementos por separado antes y después de la partición
-        quickSort(arr, low, pi - 1);  // Mitad izquierda
-        quickSort(arr, pi + 1, high); // Mitad derecha
+        quickSort(arr, low, pi);
+        quickSort(arr, pi + 1, high);
     }
 }

@@ -22,6 +22,11 @@ $(TARGET): $(SRCS)
 clean:
 	rm -f $(TARGET)
 
+Setup:
+	@echo "Generando matrices de entrada..."
+	@python3 scripts/matrix_generator.py
+	@echo "Matrices generadas en data/matrix_input/"
+
 # Ejecuta todas las combinaciones generadas por tu script
 run_all: all
 	@mkdir -p data/measurements data/matrix_output

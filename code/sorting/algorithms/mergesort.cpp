@@ -19,7 +19,7 @@ void merge(std::vector<int>& arr, int left, int mid, int right) {
     for (int j = 0; j < n2; j++)
         R[j] = arr[mid + 1 + j];
 
-    // Índices iniciales para los sub-arreglos y el mezclado
+    // indices iniciales para los sub-arreglos y el mezclado
     int i = 0, j = 0, k = left;
 
     // Se comparan los elementos de L y R y se inserta el menor
