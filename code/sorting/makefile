@@ -3,11 +3,19 @@ CXX = g++
 CXXFLAGS = -std=c++11 -Wall -O2
 TARGET = sorting_test
 
-# Archivos fuente (Asegúrate de que los nombres coincidan con tus archivos)
+# Archivos fuente
+# Asegúrate de que algorithms/sort.cpp sea el que usa std::sort
 SRCS = sorting.cpp \
        algorithms/mergesort.cpp \
        algorithms/quicksort.cpp \
        algorithms/sort.cpp
+
+# Parámetros del experimento
+SIZES = 10 1000 100000 10000000
+TYPES = aleatorio ascendente descendente
+DOMAINS = D1 D7
+SAMPLES = a b c
+ALGORITHMS = mergesort quicksort sort_stl
 
 # Regla principal
 all: $(TARGET)
@@ -18,11 +26,28 @@ $(TARGET): $(SRCS)
 # Limpieza
 clean:
 	rm -f $(TARGET)
+	rm -rf measurements/sorting/*
 
 # Ejecutar el generador de arreglos
 setup:
-	python3 scripts/array_generator.py
+	python3 scripts/matrix_generator.py
 
-# Ejemplo de prueba para sorting
+# Prueba rápida (Corregida con el dominio D1)
 test: all
-	./$(TARGET) 1000 aleatorio data/array_input/1000_aleatorio_a.txt
+	@mkdir -p measurements/sorting
+	./$(TARGET) 1000 sort_stl data/array_input/1000_aleatorio_D1_a.txt
+
+run_all: all
+	@mkdir -p measurements/sorting
+	@for n in $(SIZES); do \
+		for t in $(TYPES); do \
+			for d in $(DOMAINS); do \
+				for m in $(SAMPLES); do \
+					for alg in $(ALGORITHMS); do \
+						echo "Procesando: n=$$n, tipo=$$t, dom=$$d, muestra=$$m, alg=$$alg"; \
+						./$(TARGET) $$n $$alg data/array_input/$${n}_$${t}_$${d}_$${m}.txt; \
+					done; \
+				done; \
+			done; \
+		done; \
+	done

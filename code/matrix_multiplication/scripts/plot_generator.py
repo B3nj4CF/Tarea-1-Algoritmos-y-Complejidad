@@ -4,69 +4,85 @@ import os
 
 def cargar_datos(directorio, algoritmo):
     """
-    Busca archivos que empiecen con el nombre del algoritmo y extrae los tiempos.
+    Extrae promedios de tiempo y memoria de los archivos del algoritmo.
     """
-    tiempos = []
+    tiempos_medios = []
+    memorias_medias = []
     tamanos = []
     
-    # Listar archivos en la carpeta de mediciones
+    # Listar archivos en data/measurements
     for filename in os.listdir(directorio):
-        if filename.startswith(algoritmo) and filename.endswith(".txt"):
-            # Extraer el tamaño 'n' del nombre del archivo (ej: merge_n100.txt)
-            # Esto depende de cómo nombraste los archivos en sorting.cpp
-            parts = filename.replace(".txt", "").split("_")
+        # Buscamos archivos como 'naive_1024_metricas.txt'
+        if filename.startswith(algoritmo) and filename.endswith("_metricas.txt"):
             try:
-                # Intentamos obtener el valor numérico de n
-                n_val = int(parts[-1].replace("n", "")) 
+                # Extraer el n del nombre: algoritmo_N_metricas.txt
+                parts = filename.split("_")
+                n_val = int(parts[1]) 
                 
-                # Leer el tiempo dentro del archivo
                 with open(os.path.join(directorio, filename), 'r') as f:
                     lineas = f.readlines()
                     if lineas:
-                        # Promedio de las mediciones en el archivo
-                        promedio = np.mean([float(x.strip()) for x in lineas])
-                        tiempos.append(promedio)
+                        # Cada línea tiene: [tiempo] [memoria]
+                        datos_fila = [linea.strip().split() for linea in lineas]
+                        tiempos = [float(d[0]) for d in datos_fila]
+                        memorias = [float(d[1]) for d in datos_fila]
+                        
+                        tiempos_medios.append(np.mean(tiempos))
+                        memorias_medias.append(np.mean(memorias))
                         tamanos.append(n_val)
-            except ValueError:
+            except (ValueError, IndexError):
                 continue
 
-    # Ordenar por tamaño de n para que el gráfico no salga cruzado
-    sorted_data = sorted(zip(tamanos, tiempos))
-    if not sorted_data:
-        return [], []
+    # Ordenar para que las líneas del gráfico no salgan zigzagueantes
+    if not tamanos:
+        return [], [], []
+    
+    sorted_data = sorted(zip(tamanos, tiempos_medios, memorias_medias))
     return zip(*sorted_data)
 
-def generar_grafico():
-    # Rutas según el enunciado
-    dir_mediciones = "measurements/sorting"
-    dir_salida = "plots/sorting"
+def generar_graficos():
+    # Rutas actualizadas a tu estructura de carpetas
+    dir_mediciones = "data/measurements"
+    dir_salida = "plots"
     
-    # Crear carpeta de plots si no existe
     if not os.path.exists(dir_salida):
         os.makedirs(dir_salida)
 
+    algoritmos = ["naive", "strassen"]
+    colores = {'naive': 'blue', 'strassen': 'red'}
+    
+    # --- GRÁFICO 1: TIEMPOS ---
     plt.figure(figsize=(10, 6))
-
-    # Lista de algoritmos a graficar
-    algoritmos = ["merge", "quick", "std_sort"]
-    colores = {'merge': 'blue', 'quick': 'green', 'std_sort': 'red'}
-
     for algo in algoritmos:
-        n, t = cargar_datos(dir_mediciones, algo)
+        n, t, m = cargar_datos(dir_mediciones, algo)
         if n:
             plt.plot(n, t, marker='o', label=f'Algoritmo: {algo}', color=colores[algo])
 
-    plt.title("Comparación de Tiempos: Ordenamiento")
-    plt.xlabel("Tamaño del Arreglo (n)")
+    plt.title("Comparación de Tiempos: Multiplicación de Matrices")
+    plt.xlabel("Dimensión de la Matriz (n)")
     plt.ylabel("Tiempo (segundos)")
-    plt.xscale('log') # Escala logarítmica recomendada por los tamaños 10^1 a 10^7
+    plt.xscale('log', base=2) 
+    plt.yscale('log') # Escala logarítmica esencial para ver 0.00002 y 250 juntos
     plt.grid(True, which="both", ls="-", alpha=0.5)
     plt.legend()
+    plt.savefig(os.path.join(dir_salida, "tiempo_matrices.png"))
 
-    # Guardar en formato PNG como pide la tarea
-    path_png = os.path.join(dir_salida, "comparativa_sorting.png")
-    plt.savefig(path_png)
-    print(f"Gráfico guardado en: {path_png}")
+    # --- GRÁFICO 2: MEMORIA ---
+    plt.figure(figsize=(10, 6))
+    for algo in algoritmos:
+        n, t, m = cargar_datos(dir_mediciones, algo)
+        if n:
+            plt.plot(n, m, marker='s', ls='--', label=f'Memoria: {algo}', color=colores[algo])
+
+    plt.title("Consumo de Memoria: VmPeak")
+    plt.xlabel("Dimensión de la Matriz (n)")
+    plt.ylabel("Memoria (KB)")
+    plt.xscale('log', base=2)
+    plt.grid(True, which="both", ls="-", alpha=0.5)
+    plt.legend()
+    plt.savefig(os.path.join(dir_salida, "memoria_matrices.png"))
+    
+    print(f"Gráficos guardados en la carpeta: {dir_salida}")
 
 if __name__ == "__main__":
-    generar_grafico()
+    generar_graficos()

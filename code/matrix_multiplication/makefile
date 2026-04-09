@@ -8,20 +8,32 @@ SRCS = matrix_multiplication.cpp \
        algorithms/naive.cpp \
        algorithms/strassen.cpp
 
-# Regla principal: Compila el ejecutable
+# Variables que coinciden con tu script de Python
+SIZES = 16 64 256 1024
+TYPES = dispersa diagonal densa
+DOMAINS = D0 D10
+SAMPLES = a b c
+
 all: $(TARGET)
 
 $(TARGET): $(SRCS)
 	$(CXX) $(CXXFLAGS) $(SRCS) -o $(TARGET)
 
-# Regla para limpiar archivos temporales y el ejecutable
 clean:
 	rm -f $(TARGET)
 
-# Regla para ejecutar el generador de matrices antes de probar
-setup:
-	python3 scripts/matrix_generator.py
-
-# Ejemplo de como correr una prueba rápida
-test: all
-	./$(TARGET) 16 naive data/matrix_input/16_densa_D0_a_1.txt data/matrix_input/16_densa_D0_a_2.txt
+# Ejecuta todas las combinaciones generadas por tu script
+run_all: all
+	@mkdir -p data/measurements data/matrix_output
+	@for n in $(SIZES); do \
+		for t in $(TYPES); do \
+			for d in $(DOMAINS); do \
+				for m in $(SAMPLES); do \
+					echo "Procesando: n=$$n, tipo=$$t, dominio=$$d, muestra=$$m"; \
+					./$(TARGET) $$n naive $$t $$d $$m data/matrix_input/$${n}_$${t}_$${d}_$${m}_1.txt data/matrix_input/$${n}_$${t}_$${d}_$${m}_2.txt; \
+					./$(TARGET) $$n strassen $$t $$d $$m data/matrix_input/$${n}_$${t}_$${d}_$${m}_1.txt data/matrix_input/$${n}_$${t}_$${d}_$${m}_2.txt; \
+				done \
+			done \
+		done \
+	done
+	@echo "--- Todas las mediciones han finalizado ---"
