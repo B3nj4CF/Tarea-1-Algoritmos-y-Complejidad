@@ -44,4 +44,4 @@ if __name__ == "__main__":
     generar_archivos()
 
 
-#Notas, se ajusto la ruta de la carpeta para guardar loas que areglos ya que no funcionaba la ruta anterior, se cambio a "../sorting/data/array_input" y se agrego os.makedirs para crear la carpeta si no existe.
+#Nota personal se ajusto la ruta de la carpeta para guardar loas que areglos ya que no funcionaba la ruta anterior, se cambio a "../sorting/data/array_input" y se agrego os.makedirs para crear la carpeta si no existe.

@@ -1,83 +1,100 @@
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pandas as pd
 import glob
 import os
 
 def generar_graficos():
-    # Configuracion de rutas
+    # Rutas originales que me pasaste
     data_path = "data/measurements/"
     output_path = "data/plots/"
     
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    # Listas para guardar los promedios
     resultados = []
-
-    # Buscamos todos los archivos .txt en la carpeta de mediciones
     archivos = glob.glob(f"{data_path}*.txt")
 
+    print(f"DEBUG: Se encontraron {len(archivos)} archivos.")
+
     for archivo in archivos:
-        # Extraer info del nombre del archivo: algoritmo_N_metricas.txt, n es la dimension del arrey
         nombre_base = os.path.basename(archivo)
+        # Formato detectado en tu ls: mergesort_10_metricas.txt
         partes = nombre_base.split('_')
         
-        algoritmo = partes[0]
         try:
-            dimension = int(partes[1])
-        except ValueError:
-            continue # Saltar si el formato no coincide
+            algoritmo = partes[0]
+            dimension = int(partes[1]) # Extrae el 10, 1000, etc.
+        except (ValueError, IndexError):
+            print(f"DEBUG: Saltando {nombre_base} por formato incompatible.")
+            continue
 
-        # Leer datos (Tiempo, Memoria)
-        df = pd.read_csv(archivo, sep=' ', names=['tiempo', 'memoria'], header=None)
-        
-        # Promediar las muestras para ese N
-        tiempo_promedio = df['tiempo'].mean()
-        memoria_promedio = df['memoria'].mean() # Ya está en KB
+        # Leer datos (Tiempo y Memoria)
+        try:
+            # Usamos r'\s+' para manejar cualquier espacio generado por C++
+            df = pd.read_csv(archivo, sep=r'\s+', names=['tiempo', 'memoria'], header=None)
+            
+            if df.empty:
+                continue
+            
+            # Promediar las muestras
+            tiempo_prom = df['tiempo'].mean()
+            # Si la memoria es 0, usamos un valor mínimo para que el gráfico no falle
+            memoria_prom = max(df['memoria'].mean(), 0.1) 
 
-        resultados.append({
-            'Algoritmo': algoritmo,
-            'N': dimension,
-            'Tiempo': tiempo_promedio,
-            'Memoria': memoria_promedio
-        })
+            resultados.append({
+                'Algoritmo': algoritmo.upper(),
+                'N': dimension,
+                'Tiempo': tiempo_prom,
+                'Memoria': memoria_prom
+            })
+            print(f"DEBUG: Procesado {algoritmo} N={dimension}")
+        except Exception as e:
+            print(f"DEBUG: Error en {nombre_base}: {e}")
 
-    # Crear DataFrame principal
+    if not resultados:
+        print("Error: No hay resultados para graficar.")
+        return
+
     final_df = pd.DataFrame(resultados).sort_values(by='N')
 
-    # --- Grafico de Tiempo ---
+    # --- Gráfico de Tiempo ---
     plt.figure(figsize=(10, 6))
     for algo in final_df['Algoritmo'].unique():
         subset = final_df[final_df['Algoritmo'] == algo]
         plt.plot(subset['N'], subset['Tiempo'], marker='o', label=algo)
 
-    plt.xscale('log') # Escala logarítmica porque N crece de 10 en 10
+    plt.xscale('log')
     plt.yscale('log')
-    plt.title('Comparación de Tiempo de Ejecución')
-    plt.xlabel('Tamaño del arreglo (N)')
-    plt.ylabel('Tiempo promedio (segundos)')
+    plt.title('Comparación de Tiempo de Ejecución (Ordenamiento)')
+    plt.xlabel('Cantidad de elementos (N)')
+    plt.ylabel('Segundos (promedio)')
     plt.legend()
-    plt.grid(True, which="both", ls="-", alpha=0.5)
+    plt.grid(True, which="both", ls="-", alpha=0.3)
+    plt.tight_layout()
     plt.savefig(f"{output_path}comparativa_tiempo.png")
     plt.close()
 
-    # --- Grafico de Memoria ---
+    # --- Gráfico de Memoria ---
     plt.figure(figsize=(10, 6))
     for algo in final_df['Algoritmo'].unique():
         subset = final_df[final_df['Algoritmo'] == algo]
-        # hay que convertir KB a MB para que sea más legible y dfacil de entender
+        # Convertimos KB a MB
         plt.plot(subset['N'], subset['Memoria'] / 1024, marker='s', label=algo)
 
     plt.xscale('log')
-    plt.title('Uso Máximo de Memoria RAM (RSS)')
-    plt.xlabel('Tamaño del arreglo (N)')
-    plt.ylabel('Memoria Promedio (MB)')
+    # Usamos escala lineal para memoria para ver mejor las diferencias pequeñas
+    plt.title('Uso de Memoria RAM (RSS)')
+    plt.xlabel('Cantidad de elementos (N)')
+    plt.ylabel('Megabytes (MB)')
     plt.legend()
-    plt.grid(True, which="both", ls="-", alpha=0.5)
+    plt.grid(True, which="both", ls="-", alpha=0.3)
+    plt.tight_layout()
     plt.savefig(f"{output_path}comparativa_memoria.png")
     plt.close()
 
-    print(f"Gráficos generados exitosamente en la carpeta '{output_path}'")
+    print(f"¡Éxito! Gráficos generados en: {output_path}")
 
 if __name__ == "__main__":
     generar_graficos()

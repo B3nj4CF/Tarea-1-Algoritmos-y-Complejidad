@@ -49,7 +49,7 @@ vector<int> leerArray(string filename) {
 }
 
 /**
- * Guarda el tiempo y el pico de memoria RAM física (RSS) en KB.
+ * Guarda el tiempo y el pico de memoria RAM física en KB.
  */
 void guardarMedicion(string algoritmo, int n, double duracion) {
     string path = "data/measurements/" + algoritmo + "_" + to_string(n) + "_metricas.txt";
@@ -65,6 +65,19 @@ void guardarMedicion(string algoritmo, int n, double duracion) {
         outFile << duracion << " " << memoriaUsada << "\n";
         outFile.close();
     }
+}
+
+void guardarArrayOrdenado(const vector<int>& arr, string rutaEntrada) {
+    size_t lastSlash = rutaEntrada.find_last_of("/");
+    string nombre = (lastSlash == string::npos) ? rutaEntrada : rutaEntrada.substr(lastSlash + 1);
+
+    nombre.replace(nombre.find(".txt"), 4, "_out.txt");
+
+    ofstream outFile("data/array_output/" + nombre);
+    for (int x : arr) {
+        outFile << x << "\n";
+    }
+    outFile.close();
 }
 
 int main(int argc, char* argv[]) {
@@ -102,6 +115,6 @@ int main(int argc, char* argv[]) {
     guardarMedicion(algoritmo, tamanoDimension, diff.count());
 
     cout << "Finalizado: " << algoritmo << " para N=" << tamanoDimension << " en " << diff.count() << "s" << endl;
-    
+    guardarArrayOrdenado(data, ruta_archivo);
     return 0;
 }

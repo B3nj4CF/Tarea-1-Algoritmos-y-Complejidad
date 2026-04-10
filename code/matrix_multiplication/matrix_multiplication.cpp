@@ -9,7 +9,7 @@
 #include <fstream>
 #include <chrono>
 #include <string>
-#include <sys/resource.h> // <--- NUEVO: Para rusage
+#include <sys/resource.h>
 
 using std::vector;
 using std::string;
@@ -32,7 +32,6 @@ Matrix strassen(const Matrix& A, const Matrix& B, int n);
 long obtenerMemoriaPeak() {
     struct rusage usage;
     if (getrusage(RUSAGE_SELF, &usage) == 0) {
-        // En Arch Linux, ru_maxrss devuelve Kilobytes (KB)
         return usage.ru_maxrss;
     }
     return 0; 
@@ -95,7 +94,7 @@ int main(int argc, char* argv[]) {
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> tiempoTotal = end - start;
 
-    // --- MEDICIÓN DE MEMORIA CON RUSAGE (RSS) ---
+    // --- MEDICIÓN DE MEMORIA CON RUSAGE ---
     // Esto captura el pico máximo de RAM física durante la ejecución
     long memoriaUsada = obtenerMemoriaPeak();
 

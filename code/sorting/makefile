@@ -4,7 +4,6 @@ CXXFLAGS = -std=c++11 -Wall -O2
 TARGET = sorting_test
 
 # Archivos fuente
-# Asegúrate de que algorithms/sort.cpp sea el que usa std::sort
 SRCS = sorting.cpp \
        algorithms/mergesort.cpp \
        algorithms/quicksort.cpp \
@@ -26,15 +25,18 @@ $(TARGET): $(SRCS)
 # Limpieza
 clean:
 	rm -f $(TARGET)
+	rm -rf data/array_output/*
+	rm -rf data/measurements/*
+	rm -rf data/plots/*
 
 # Ejecutar el generador de arreglos
-setup:
-	python3 scripts/matrix_generator.py
+inputs:
+	python3 scripts/array_generator.py
 
-# Prueba rápida (Corregida con el dominio D1)
+# Prueba rapida
 test: all
-	@mkdir -p measurements/sorting
-	./$(TARGET) 1000 sort_stl data/array_input/1000_aleatorio_D1_a.txt
+	@mkdir -p data/measurements
+	./$(TARGET) 1000 sort data/array_input/1000_aleatorio_D1_a.txt
 
 run_all: all
 	@for n in $(SIZES); do \
@@ -49,3 +51,8 @@ run_all: all
 			done; \
 		done; \
 	done
+
+graficos:
+	@echo "Generando gráficos..."
+	@python3 scripts/plot_generator.py
+	@echo "Gráficos generados en data/plots/"

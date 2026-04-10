@@ -24,13 +24,13 @@ def generar_matriz(n, tipo, dominio):
         np.fill_diagonal(matriz, diag_vals)
     elif tipo == 'dispersa':
         matriz = np.zeros((n, n), dtype=int)
-        cantidad = max(1, (n * n) // 10)  # solo 10% elementos diferentes de 0
+        cantidad = max(1, (n * n) // 10)
         for _ in range(cantidad):
             i = random.randint(0, n-1)
             j = random.randint(0, n-1)
             matriz[i, j] = random.choice([v for v in valores if v != 0])
     else:
-        raise ValueError("Tipo no válido. Usa 'densa', 'diagonal' o 'dispersa'.")
+        raise ValueError("Tipo no válido. Usar 'densa', 'diagonal' o 'dispersa'.")
     
     return matriz
 

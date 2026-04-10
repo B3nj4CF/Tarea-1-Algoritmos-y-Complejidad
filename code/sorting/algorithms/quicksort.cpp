@@ -5,7 +5,7 @@ using std::vector;
 using std::swap;
 
 /**
- * Partición de Lomuto
+ * Partición de hoare es mas eficiente que la de lomuto y asi no se demora para las pruebas
  * pasar al ingotme https://www.geeksforgeeks.org/dsa/hoares-vs-lomuto-partition-scheme-quicksort/
  */
 int partition(vector<int>& arr, int low, int high) {

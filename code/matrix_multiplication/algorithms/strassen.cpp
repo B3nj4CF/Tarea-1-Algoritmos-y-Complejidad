@@ -1,7 +1,7 @@
 /**
  * TAREA 1 - INF-221 ALGORITMOS Y COMPLEJIDAD
  * Estudiante: Benjamin Campos
- * Algoritmo de Strassen (Implementación pura)
+ * Algoritmo de Strassen (Implementación pura osea que tiene naive)
  */
 
 #include <vector>

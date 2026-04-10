@@ -1,15 +1,102 @@
-\begin{mdframed}
-    \textbf{La extensión máxima para esta sección es de 4 páginas.} Si utiliza menos páginas y explica bien sus resultados, es preferible.
-\end{mdframed}
+\subsection{Resultados de la Multiplicación de matrices}
 
-Presente sus resultados mediante \textbf{tablas y gráficos}. Cada tabla o gráfico debe estar referenciado en el texto, con una breve descripción de lo que se observa y por qué es relevante.
+\begin{figure}[H]
+    \centering
+    % Primera imagen (izquierda)
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{memoria_matrices.png}
+        \caption{Comparativa de memoria.}
+        \label{fig:memoria_matrices}
+    \end{minipage}
+    \hfill % Espacio elástico entre las dos imágenes
+    % Segunda imagen (derecha)
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{tiempo_matrices.png}
+        \caption{Comparativa de tiempo.}
+        \label{fig:tiempo_matrices}
+    \end{minipage}
+\end{figure}
 
-\textbf{Es necesario automatizar la generación de las gráficas}, ya que es imprescindible que se pueda confirmar que las visualizaciones presentadas son producto de los datos generados por sus algoritmos.
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c}
+Dimensión ($n$) & Naive (s) & Strassen (s) \\
+\hline
+$2^4$ & $4\times10^{-6}$ & $1\times10^{-3}$ \\
+$2^6$ & $1.5\times10^{-4}$ & $5\times10^{-2}$ \\
+$2^8$ & $1.2\times10^{-2}$ & $2$ \\
+$2^{10}$ & $2$ & $120$ \\
+\end{tabular}
+\caption{Tiempo de ejecución en multiplicación de matrices}
+\label{tab:tiempo_matrices}
+\end{table}
 
-Escoja las gráficas más representativas y que muestren de manera clara los resultados obtenidos. Esta elección es parte de lo que se evaluará en la sección de presentación de resultados.
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c}
+Dimensión ($n$) & Naive (KB) & Strassen (KB) \\
+\hline
+$2^4$ & 3500 & 3500 \\
+$2^6$ & 3800 & 3800 \\
+$2^8$ & 4500 & 6000 \\
+$2^{10}$ & 16000 & 36000 \\
+\end{tabular}
+\caption{Consumo de memoria en multiplicación de matrices}
+\label{tab:memoria_matrices}
+\end{table}
 
+Al observar el comportamiento de los dos algoritmos implementados en términos de ejecución, se ve a simple vista que el algoritmo Naive es mucho más eficiente técnicamente que el algoritmo Strassen para las dimensiones probadas. Se sabe que la teoría asintótica sugiere que Strassen debería ser más eficiente debido a su complejidad, la cual es de $O(n^{2,81})$ en comparación a la de Naive, la cual es de $O(n^3)$. Si nos fijamos en el Cuadro 1 (Tiempo de ejecución en multiplicación de matrices), esto nos muestra una realidad completamente distinta a lo esperado, ya que para una matriz de $2^{10}$, Naive resuelve la operación en tan solo 2 segundos mientras que Strassen se demora 120 segundos. Esta diferencia se puede explicar por la constante oculta que contiene Strassen, ya que la reducción de una multiplicación entre matrices contiene 18 operaciones de suma y resta adicionales en cada nivel de recursión que se ejecuta. Estas operaciones resultan contraproducentes en matrices de tamaño mediano, debido a que el costo de gestionar estas operaciones aritméticas extras y el overhead de las múltiples llamadas recursivas superan con creces el beneficio de reducir la complejidad polinomial. 
+Ahora, si nos fijamos en la Figura 1 (Comparativa de memoria), nos muestra unos resultados preocupantes si se desea usar en este caso el algoritmo Strassen en entornos de computación con recursos limitados o usar mayor tamanos de matrices. Mientras que por el lado de Naive el algoritmo muestra una tendencia lineal y predecible de memoria, Strassen muestra un crecimiento abrupto que ha llegado a duplicar su consumo al alcanzar una dimensión de $n = 2^{10}$ (aprox. 35.000 KB en comparación a 16.000 KB). Esto es debido a la naturaleza del método (divide y vencerás), ya que mientras la multiplicación tradicional opera de una manera eficiente en términos de espacio, Strassen usa la creación y almacenamiento de siete matrices intermedias ($M_1$ a $M_7$) en cada etapa del proceso. Esto no solo eleva el uso de memoria, sino que también degrada el rendimiento debido a la pérdida de la localidad de la memoria, obligando al sistema a realizar constantemente operaciones de asignación en el heap.
+Aplicando el Teorema Maestro al algoritmo de Strassen $T(n) = 7T(n/2) + \Theta(n^2)$, obtenemos una complejidad de $O(n^{\log_2 7}) \approx O(n^{2,81})$. No obstante, el análisis experimental revela que el costo de las 18 operaciones adicionales de suma/resta por nivel y la gestión de las 7 matrices intermedias imponen un factor constante tan elevado que la ventaja teórica no se percibe en las dimensiones probadas.
 
+\subsection{Algoritmos de ordenamiento}
+\begin{figure}[H]
+    \centering
+    % Primera imagen (izquierda)
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{comparativa_memoria.png}
+        \caption{Comparativa de memoria.}
+        \label{fig:memorias Arrays}
+    \end{minipage}
+    \hfill % Espacio elástico entre las dos imágenes
+    % Segunda imagen (derecha)
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{comparativa_tiempo.png}
+        \caption{Comparativa de tiempo.}
+        \label{fig:tiempo aarays}
+    \end{minipage}
+\end{figure}
 
-\begin{mdframed}
-    Recuerde que es imprescindible que se pueda replicar la generación de las gráficas, por lo que usted debe referir a las figuras generadas en `code/matrix\_multiplication/data/plots/` y `code/sorting/data/plots/`.
-\end{mdframed}
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c|c}
+N & MergeSort (s) & QuickSort (s) & Sort (s) \\
+\hline
+$10$ & $5\times10^{-6}$ & $2\times10^{-6}$ & $2\times10^{-6}$ \\
+$10^3$ & $1\times10^{-4}$ & $5\times10^{-5}$ & $2\times10^{-5}$ \\
+$10^5$ & $1\times10^{-2}$ & $4\times10^{-3}$ & $3\times10^{-3}$ \\
+$10^7$ & $0.8$ & $0.3$ & $0.25$ \\
+\end{tabular}
+\caption{Tiempo de ejecución de algoritmos de ordenamiento}
+\label{tab:tiempo_sorting}
+\end{table}
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c|c}
+N & MergeSort (MB) & QuickSort (MB) & Sort (MB) \\
+\hline
+$10$ & 3.5 & 3.5 & 3.5 \\
+$10^3$ & 3.6 & 3.6 & 3.6 \\
+$10^5$ & 4.5 & 4.5 & 4.5 \\
+$10^7$ & 81 & 69 & 69 \\
+\end{tabular}
+\caption{Uso de memoria en algoritmos de ordenamiento}
+\label{tab:memoria_sorting}
+\end{table}
+
+Para el caso de los arreglos, se utilizaron tres algoritmos distintos en comparación con la multiplicación de matrices: se trabajó con sort, Quicksort y Mergesort. Si observamos el Cuadro 3 y la Figura 4, se puede apreciar que, aunque teóricamente los tres algoritmos comparten una complejidad promedio de $O(n \log n)$, existe una diferencia significativa en su rendimiento práctico. La librería sort, al ser el estándar de C++, demuestra ser la más eficiente en los rangos probados, alcanzando un tiempo de 0,25 segundos para $n = 10^7$. Le sigue Quicksort con un tiempo de 0,3 segundos; esta diferencia se debe a que la librería estándar suele emplear algoritmos híbridos (como Introsort), lo que optimiza el proceso al cambiar de estrategia según el tamaño de la sublista y aprovechar mejor las instrucciones a nivel de hardware. Por otro lado, Mergesort resulta ser el más lento en todos los casos probados, llegando a los 0,8 segundos para $n = 10^7$. Respecto al uso de memoria, el Cuadro 4 y la Figura 3 revelan un comportamiento elevado en términos de escalabilidad para grandes volúmenes de datos; se observa que hasta $n = 10^5$, el consumo de los tres algoritmos se mantiene estable y similar entre sí (aprox. 4,5 MB). Sin embargo, al alcanzar $n = 10^7$ se produce un salto drástico: mientras Mergesort eleva su consumo hasta los 81 MB, Quicksort y sort se mantienen en 69 MB. Esta disparidad se debe a la principal desventaja de Mergesort: su naturaleza no es in-place, por lo que requiere arreglos auxiliares proporcionales al tamaño de la entrada para realizar la mezcla de los elementos. En cambio, Quicksort y sort optimizan el uso de espacio al trabajar, en su gran mayoría, sobre el mismo arreglo de entrada.
+Para validar estos resultados desde una perspectiva formal, se puede aplicar el Teorema Maestro a la recurrencia de Mergesort, definida como $T(n) = 2T(n/2) + \Theta(n)$. En este caso, al tener $a=2$, $b=2$ y $f(n)=n$, se cumple que $f(n) = \Theta(n^{\log_2 2})$, lo que corresponde al Caso 2 del teorema, confirmando una complejidad de $\Theta(n \log n)$. Aunque Quicksort y sort (Introsort) comparten esta cota superior teórica, la experimentación demuestra que las constantes de implementación y la gestión de memoria in-place son los factores determinantes en la eficiencia real sobre el hardware.

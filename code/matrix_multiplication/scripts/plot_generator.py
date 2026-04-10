@@ -12,7 +12,6 @@ def cargar_datos(directorio, algoritmo):
     
     # Listar archivos en data/measurements
     for filename in os.listdir(directorio):
-        # Buscamos archivos como 'naive_1024_metricas.txt'
         if filename.startswith(algoritmo) and filename.endswith("_metricas.txt"):
             try:
                 # Extraer el n del nombre: algoritmo_N_metricas.txt
@@ -74,7 +73,7 @@ def generar_graficos():
         if n:
             plt.plot(n, m, marker='s', ls='--', label=f'Memoria: {algo}', color=colores[algo])
 
-    plt.title("Consumo de Memoria: VmPeak")
+    plt.title("Consumo de Memoria")
     plt.xlabel("Dimensión de la Matriz (n)")
     plt.ylabel("Memoria (KB)")
     plt.xscale('log', base=2)

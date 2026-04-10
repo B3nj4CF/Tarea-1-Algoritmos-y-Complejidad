@@ -1,5 +1,1 @@
-\begin{mdframed}
-    \textbf{La extensión máxima para esta sección es un párrafo breve (máximo 1/4 de página).}
-\end{mdframed}
-
-Escriba una conclusión breve que interprete los resultados más importantes. Cada afirmación debe estar respaldada por los datos presentados.
+Considerando los resultados obtenidos, se concluye que, para las dimensiones evaluadas, la eficiencia práctica está fuertemente condicionada por la gestión de memoria y el overhead algorítmico más que por la complejidad teórica. En el ordenamiento de arreglos, la librería estándar std::sort ($0,25$ s) superó ampliamente a Mergesort ($0,8$ s) debido a su naturaleza in-place y al uso de algoritmos híbridos que optimizan el hardware, evitando el uso excesivo de memoria (69 MB frente a 81 MB para $n = 10^7$). Por otro lado, en la multiplicación de matrices, el algoritmo Naive resultó ser drásticamente más eficiente ($2$ s) y ligero (16.000 KB) que Strassen (120 s y 35.000 KB) para $n = 2^{10}$. Esto evidencia que, en matrices de tamaño mediano, las constantes ocultas y las múltiples operaciones de suma, reducción y asignación en memoria del método de Strassen contrarrestan cualquier ventaja competitiva de su complejidad asintótica $O(n^{2,81})$.
