@@ -33,7 +33,7 @@ En esta carpeta se encuentra la plantilla en LaTeX para la elaboración del mini
 1. Los Makefiles están diseñados para que solo haya que ejecutar comandos precisos: make inputs, make clean, make run_all y make graficos. Lo ideal sería ejecutarlos en ese orden para ambos casos (ordenamiento y multiplicación).
 2. Algunos códigos son una combinación de varios encontrados en internet y en la bibliografía. Debido a que para arreglos de 10**7 se hacían pesados, se modificaron cosas para que funcionen; eso mismo fue extrapolado a la multiplicación de matrices.
 3. No quedó bien claro cómo se tenía que hacer el mini-informe, así que se pasó la carpeta report a Overleaf en internet y desde ahí se trabajó el Latex, se intentó ser lo más claro posible y mantenerlo dentro de los márgenes.
-4. Los inputs se envían vacíos para poder comprimirlos y que se puedan enviar por Aula. 
+4. Los inputs se envían vacíos para poder comprimirlos y que se puedan enviar por Aula, solo hay que ejecutar el orden de el punto 1.
 5. Se modificaron los generadores de los inputs, ya que había errores en la ruta de donde se guardaban.
 6. Es necesario tener las librerías usadas para que no haya fallos.
 7. Se usó Arch Linux como sistema, así que ojo con eso, por favor, porque puede que en Windows (WSL) no funcione, no lo sé. 
