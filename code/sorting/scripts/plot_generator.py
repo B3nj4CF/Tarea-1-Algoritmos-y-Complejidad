@@ -6,7 +6,6 @@ import glob
 import os
 
 def generar_graficos():
-    # Rutas originales que me pasaste
     data_path = "data/measurements/"
     output_path = "data/plots/"
     
@@ -20,19 +19,19 @@ def generar_graficos():
 
     for archivo in archivos:
         nombre_base = os.path.basename(archivo)
-        # Formato detectado en tu ls: mergesort_10_metricas.txt
+        # formato, mergesort_10_metricas.txt
         partes = nombre_base.split('_')
         
         try:
             algoritmo = partes[0]
-            dimension = int(partes[1]) # Extrae el 10, 1000, etc.
+            dimension = int(partes[1])
         except (ValueError, IndexError):
             print(f"DEBUG: Saltando {nombre_base} por formato incompatible.")
             continue
 
         # Leer datos (Tiempo y Memoria)
         try:
-            # Usamos r'\s+' para manejar cualquier espacio generado por C++
+            #  r'\s+' es para manejar cualquier espacio generado por C++
             df = pd.read_csv(archivo, sep=r'\s+', names=['tiempo', 'memoria'], header=None)
             
             if df.empty:
@@ -40,7 +39,7 @@ def generar_graficos():
             
             # Promediar las muestras
             tiempo_prom = df['tiempo'].mean()
-            # Si la memoria es 0, usamos un valor mínimo para que el gráfico no falle
+            # Si la memoria es 0, usar un valor mínimo para que el gráfico no falle
             memoria_prom = max(df['memoria'].mean(), 0.1) 
 
             resultados.append({
@@ -84,7 +83,6 @@ def generar_graficos():
         plt.plot(subset['N'], subset['Memoria'] / 1024, marker='s', label=algo)
 
     plt.xscale('log')
-    # Usamos escala lineal para memoria para ver mejor las diferencias pequeñas
     plt.title('Uso de Memoria RAM (RSS)')
     plt.xlabel('Cantidad de elementos (N)')
     plt.ylabel('Megabytes (MB)')

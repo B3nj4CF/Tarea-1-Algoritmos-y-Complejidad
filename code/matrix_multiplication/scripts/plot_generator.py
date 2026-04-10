@@ -14,7 +14,7 @@ def cargar_datos(directorio, algoritmo):
     for filename in os.listdir(directorio):
         if filename.startswith(algoritmo) and filename.endswith("_metricas.txt"):
             try:
-                # Extraer el n del nombre: algoritmo_N_metricas.txt
+                # Extraer el n del nombre, algoritmo_N_metricas.txt
                 parts = filename.split("_")
                 n_val = int(parts[1]) 
                 

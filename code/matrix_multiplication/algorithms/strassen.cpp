@@ -28,7 +28,7 @@ Matrix restar(const Matrix& A, const Matrix& B, int dimensionMatriz) {
 }
 
 Matrix strassen(const Matrix& A, const Matrix& B, int dimensionMatriz) {
-    // CASO BASE: Importante para evitar recursión infinita
+    // caso base importante para evitar recursión infinita
     if (dimensionMatriz == 1) {
         Matrix res(1, vector<int>(1));
         res[0][0] = A[0][0] * B[0][0];
