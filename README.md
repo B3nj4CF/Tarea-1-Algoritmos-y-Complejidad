@@ -30,12 +30,13 @@ En esta carpeta se encuentra la plantilla en LaTeX para la elaboración del mini
 
 
 ## Notas Personales
-
-1. Los makeFiles tan disenados para que solo haya que ejecutar comados justos, make inputs, make clean, make run_all, make graficos (lo ideal seria en ese orden para ambos casos)
-2. Algunos codigos son conbinacion de varios encontrados en internet y en la bibliografia ya que para arreglo de 10**7 se hacian pesados entonces para que fucniones se modificaron cosas eso extrapolado a la multiplicacion de matrices
-3. No quedop bien claro como se tenia que hacer el mini informe, asi que paso la carpeta report a Overleaf en internet y desde ahi se trabajo el Latex, Se intento ser lo mas claro y manterlo dentro de los margenes
-4. Los input se envian vaciios para poder comprimirlo y que se pueda enviar por aula
-5. Se modico los generadores de los input ya que habia errores en la ruta de donde se guardaban
-6. Es necesario tener las librerias usadas para que no haya fallos
-7. Se uso Archlinux como el sistema asi que ojo con eso porfa por que puede que en windows WSL no funcione, no lo se
-8. Se intento que el codigo quedara ordenado y limpio a la vista
+1. Los Makefiles están diseñados para que solo haya que ejecutar comandos precisos: make inputs, make clean, make run_all y make graficos. Lo ideal sería ejecutarlos en ese orden para ambos casos (ordenamiento y multiplicación).
+2. Algunos códigos son una combinación de varios encontrados en internet y en la bibliografía. Debido a que para arreglos de 10**7 se hacían pesados, se modificaron cosas para que funcionen; eso mismo fue extrapolado a la multiplicación de matrices.
+3. No quedó bien claro cómo se tenía que hacer el mini-informe, así que se pasó la carpeta report a Overleaf en internet y desde ahí se trabajó el Latex, se intentó ser lo más claro posible y mantenerlo dentro de los márgenes.
+4. Los inputs se envían vacíos para poder comprimirlos y que se puedan enviar por Aula. 
+5. Se modificaron los generadores de los inputs, ya que había errores en la ruta de donde se guardaban.
+6. Es necesario tener las librerías usadas para que no haya fallos.
+7. Se usó Arch Linux como sistema, así que ojo con eso, por favor, porque puede que en Windows (WSL) no funcione, no lo sé. 
+8. Se intentó que el código quedara ordenado y limpio a la vista.
+9. Hay un grafico en el informe que tiene un nombre de VMpeak eso era lo que usaba antes para ver la memoria pero luego se cambio por otra forma.
+10. Mi Pc exploto... porfa proxima tarea con menor tanano de entradas y mas entendibles.
