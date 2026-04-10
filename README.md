@@ -40,3 +40,4 @@ En esta carpeta se encuentra la plantilla en LaTeX para la elaboración del mini
 8. Se intentó que el código quedara ordenado y limpio a la vista.
 9. Hay un grafico en el informe que tiene un nombre de VMpeak eso era lo que usaba antes para ver la memoria pero luego se cambio por otra forma.
 10. Mi Pc exploto... porfa proxima tarea con menor tanano de entradas y mas entendibles.
+11. Este es el repositorio: https://github.com/B3nj4CF/Tarea-1-Algoritmos-y-Complejidad.git
